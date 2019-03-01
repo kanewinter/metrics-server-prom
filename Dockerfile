@@ -1,5 +1,4 @@
-ARG PYTHON_VERSION=3
-FROM python:${PYTHON_VERSION}-slim
+FROM python:3-slim
 
 ENV USER=prometheus
 ENV GROUP=prometheus
@@ -28,7 +27,9 @@ RUN set -x \
 	&& curl -L https://storage.googleapis.com/kubernetes-release/release/$(curl \
 		-s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
 		-o /usr/bin/kubectl \
+    && curl -o /usr/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator \
 	&& chmod +x /usr/bin/kubectl \
+	&& chmod +x /usr/bin/aws-iam-authenticator \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
 		${APT_BUILD_DEPS} \
 	&& rm -rf /var/lib/apt/lists/*
@@ -50,9 +51,13 @@ RUN set -x \
 	&& pip install ${PIP_RUN_DEPS}
 
 USER root
+COPY data/src/transform.py /home/${USER}/transform/
+COPY data/uwsgi/uwsgi.ini /home/${USER}/transform/
 
-COPY --chown=1000:1000 data/src/transform.py /home/${USER}/transform/
-COPY --chown=1000:1000 data/uwsgi/uwsgi.ini /home/${USER}/transform/
+RUN set -x \
+    && chown 1000:1000 /home/${USER}/transform/transform.py \
+    && chown 1000:1000 /home/${USER}/transform/uwsgi.ini
+
 COPY data/supervisord.conf /etc/supervisor/supervisord.conf
 COPY data/docker-entrypoint.sh /docker-entrypoint.sh
 
