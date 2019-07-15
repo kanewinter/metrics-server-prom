@@ -77,7 +77,7 @@ fi
 ### Check Kubernetes cluster reachability
 ###
 printf "[init] Checking cluster info ..."
-if ! ERROR="$( (kubectl cluster-info --request-timeout='5s' 3>&2 2>&1 1>&3) 2>/dev/null) )"; then
+if ! ERROR="$( (kubectl cluster-info --request-timeout='20s' 3>&2 2>&1 1>&3) 2>/dev/null) )"; then
 	>&2 echo "FAILED"
 	>&2 echo "[init] Error, could not use provided kube config to validate against the cluster"
 	>&2 echo "[init] ${ERROR}"

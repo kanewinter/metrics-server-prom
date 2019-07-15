@@ -1,6 +1,6 @@
 DIR = .
 FILE = Dockerfile
-IMAGE = cytopia/metrics-server-prom
+IMAGE = m2p
 TAG = latest
 
 .PHONY: build rebuild test tag pull login push
@@ -28,9 +28,11 @@ else
 endif
 
 bash-enter:
-	docker run --rm --name $(subst /,-,$(IMAGE)) -it --entrypoint=bash -p 9100:9100 -v ${HOME}/.kube/config:/etc/kube/config:ro $(ARG) $(IMAGE)
+	#docker run --rm --name $(subst /,-,$(IMAGE)) -it --privileged --entrypoint=bash -p 9100:9100 -v ${KUBECONFIG}:/etc/kube/config:ro $(ARG) $(IMAGE)
+	. ~/.passwords/awsauth.sh remax ;\
+	sudo docker run --rm --name $(IMAGE) -it --entrypoint=bash --privileged -p 9100:9100 -v /home/kane/sysconfigs/kubernetes/remax-eksconfig:/etc/kube/config:ro $(ARG) $(IMAGE)
 
 run:
-	docker run --rm --name $(subst /,-,$(IMAGE)) -p 9100:9100 -v ${HOME}/.kube/config:/etc/kube/config:ro $(ARG) $(IMAGE)
+	docker run --rm --name $(subst /,-,$(IMAGE)) -p 9100:9100 -v ${KUBECONFIG}:/etc/kube/config:ro $(ARG) $(IMAGE)
 exec:
 	docker exec -it $(shell docker ps -q --filter "name=$(subst /,-,$(IMAGE))") bash
