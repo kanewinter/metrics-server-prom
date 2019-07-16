@@ -28,9 +28,8 @@ else
 endif
 
 bash-enter:
-	#docker run --rm --name $(subst /,-,$(IMAGE)) -it --privileged --entrypoint=bash -p 9100:9100 -v ${KUBECONFIG}:/etc/kube/config:ro $(ARG) $(IMAGE)
 	. ~/.passwords/awsauth.sh remax ;\
-	sudo docker run --rm --name $(IMAGE) -it --entrypoint=bash --privileged -p 9100:9100 -v /home/kane/sysconfigs/kubernetes/remax-eksconfig:/etc/kube/config:ro $(ARG) $(IMAGE)
+	sudo docker run --rm --name $(IMAGE) -it --entrypoint=bash --privileged -p 9100:9100 -v $(KUBECONFIG):/etc/kube/config:ro $(ARG) $(IMAGE)
 
 run:
 	docker run --rm --name $(subst /,-,$(IMAGE)) -p 9100:9100 -v ${KUBECONFIG}:/etc/kube/config:ro $(ARG) $(IMAGE)
