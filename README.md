@@ -1,3 +1,5 @@
+### I added aws auth :)
+
 # Kubernetes Metrics Server Prometheus Adapter
 
 **[Motivation](#motivation)** |
